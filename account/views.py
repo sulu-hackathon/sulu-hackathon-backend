@@ -4,11 +4,12 @@ from rest_framework.permissions import AllowAny
 from firebase_admin import firestore
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
 import json
-
 
 db = firestore.client()
 @csrf_exempt  # Disable CSRF for simplicity; consider proper CSRF handling in production
+@api_view(['POST'])
 def create_user(request):
     if request.method == "POST":
         # Parse JSON data from the request body
