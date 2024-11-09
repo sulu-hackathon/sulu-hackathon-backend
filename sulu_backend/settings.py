@@ -11,6 +11,25 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import firebase_admin
+from firebase_admin import credentials
+import os
+
+#Sulu_API intialize
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+API_KEY_PATH = os.path.join(BASE_DIR, 'sulu_api_key.txt')
+
+# Read the API key from the file
+try:
+    with open(API_KEY_PATH) as f:
+        SULU_API_KEY = f.read().strip()
+except FileNotFoundError:
+    SULU_API_KEY = None
+    print("API key file not found. Please check the path to 'sulu_api.txt'")
+
+# Initialize Firebase
+cred = credentials.Certificate("serviceAccount.json")
+firebase_admin.initialize_app(cred)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -73,12 +92,12 @@ WSGI_APPLICATION = 'sulu_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation

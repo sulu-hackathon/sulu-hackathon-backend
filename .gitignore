@@ -1,0 +1,47 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Django stuff:
+*.log
+local_settings.py
+
+# Ignore Django migrations
+*/migrations/
+
+# Ignore SQLite database
+*.sqlite3
+
+# Ignore environment variable files
+.env
+
+# Ignore media files
+/media/
+
+# Ignore static files
+/staticfiles/
+*.static/
+
+# Ignore IDE files (e.g., PyCharm, VSCode)
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Ignore Python virtual environment
+venv/
+env/
+ENV/
+.venv/
+.VENV/
+
+# Ignore sulu_api.txt and serviceAccount.json
+sulu_api_key.txt
+serviceAccount.json
+
+# Ignore macOS system files
+.DS_Store
