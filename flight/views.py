@@ -5,8 +5,12 @@ from django.conf import settings
 from rest_framework.decorators import api_view
 from datetime import datetime, timedelta
 import time
-# Create your views here.
+from firebase_admin import firestore
+from django.views.decorators.csrf import csrf_exempt
+import json
 
+
+db = firestore.client()
 # Fetch the API key from settings or a file
 headers = {
     "Authorization": f"Bearer {settings.SULU_API_KEY}"
@@ -55,4 +59,29 @@ def fetch_flight_details(request, search_param):
 
     return JsonResponse(flight_details, safe=False)
 
+
+@csrf_exempt  # Disable CSRF for simplicity; consider proper CSRF handling in production
+@api_view(['POST'])
+def add_flight_details(request):
+    if request.method == "POST":
+        # Parse JSON data from the request body
+        data = json.loads(request.body)
+        ussid = data.get("ussid")
+        flight_number = data.get("flight_number")
+        flight_date = data.get("flight_date")
+        if not ussid:
+            return JsonResponse({"error": "ussid is required"}, status=400)
+
+        user_flight_details = {
+            "flight_number" : flight_number,
+            "flight_date" : flight_date
+        }
+        # Save the data in the 'users' collection with document ID as `ussid`
+        try:
+            db.collection("users").document(ussid).set(user_flight_details)
+            return JsonResponse({"message": f"Flight details pushed successfully for user"}, status=201)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Only POST requests are allowed"}, status=405)
 
