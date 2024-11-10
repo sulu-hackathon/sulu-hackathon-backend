@@ -4,8 +4,8 @@ import os
 # File paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 API_KEY_PATH = os.path.join(BASE_DIR, 'sulu_api_key.txt')
-INPUT_FILE_PATH = os.path.join(BASE_DIR, 'top_pages.txt')
-OUTPUT_FILE_PATH = os.path.join(BASE_DIR, 'pages_ids.txt')
+INPUT_FILE_PATH = os.path.join(BASE_DIR, 'top_people.txt')
+OUTPUT_FILE_PATH = os.path.join(BASE_DIR, 'people_ids.txt')
 
 # Base URL for the Instagram API
 INSTAGRAM_API_URL = "https://instagram-scraper-2022.p.sulu.sh/ig/"
