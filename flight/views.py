@@ -12,17 +12,15 @@ headers = {
     "Authorization": f"Bearer {settings.SULU_API_KEY}"
 }
 @api_view(['GET'])
-def fetch_possible_dates(request, search_param):
+def fetch_flight_details(request, search_param):
     FLIGHT_URL =f"https://aerodatabox.p.sulu.sh/flights/Number/{search_param}/dates"
     try:
         # Make the API request
         response = requests.get(FLIGHT_URL, headers=headers)
-        response.raise_for_status()  # Raise an error for bad responses (4xx or 5xx)
+        response.raise_for_status() 
 
         # Parse and return the JSON data
         data = response.json()
-
-        # Filter to include only the next 10 dates from today
         today = datetime.now().date()
         # Sort and filter dates after today, then select the first 10
         filtered_dates = sorted(
