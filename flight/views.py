@@ -26,12 +26,10 @@ def fetch_flight_details(request, search_param):
         filtered_dates = sorted(
             [date_str for date_str in data if datetime.strptime(date_str, "%Y-%m-%d").date() >= today]
         )[:10]
-        print(filtered_dates)
     except requests.exceptions.RequestException as e:
         return JsonResponse({"error": "Failed to fetch dates, flight does not exist or dates are not near enough"}, status=404)
 
     flight_details =[]
-    print(type(filtered_dates))
     for date in filtered_dates:
         FLIGHT_DETAILS_URL= f"https://aerodatabox.p.sulu.sh/flights/Number/{search_param}/{date}?withAircraftImage=false&withLocation=false"
         try:
