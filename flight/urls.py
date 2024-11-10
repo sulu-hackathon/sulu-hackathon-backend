@@ -3,4 +3,5 @@ from . import views
 
 urlpatterns = [
     path('fetch_flight_details/<str:search_param>/', views.fetch_flight_details, name='fetch_flight_details'),
+    path('add_flight_details/', views.add_flight_details, name='add_flight_details')
 ]
