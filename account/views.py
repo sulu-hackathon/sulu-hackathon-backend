@@ -6,6 +6,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 import json
+from instagramApp.matchmaker import process_followings
 
 db = firestore.client()
 @csrf_exempt  # Disable CSRF for simplicity; consider proper CSRF handling in production
@@ -26,6 +27,7 @@ def create_user(request):
         if not ussid:
             return JsonResponse({"error": "ussid is required"}, status=400)
 
+        pages_hash , people_hash = process_followings(instaid)
         # Prepare the data to store in Firestore
         user_data = {
             "instaid": instaid,
@@ -34,7 +36,9 @@ def create_user(request):
             "age": age,
             "nationality": nationality,
             "gender": gender,
-            "bio": bio
+            "bio": bio,
+            "pages_hash": str(pages_hash),
+            "people_hash": str(people_hash)
         }
 
         # Save the data in the 'users' collection with document ID as `ussid`
@@ -42,6 +46,7 @@ def create_user(request):
             db.collection("users").document(ussid).set(user_data)
             return JsonResponse({"message": "User created successfully"}, status=201)
         except Exception as e:
+            print("Error:", e)
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Only POST requests are allowed"}, status=405)
