@@ -72,7 +72,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'account',
     'instagramApp',
-    'drf_spectacular'
+    'drf_spectacular',
+    'flight'
 ]
 
 MIDDLEWARE = [
