@@ -53,10 +53,10 @@ def validate_instagram(request, username):
         return HttpResponse(status=500)
     
 @api_view(['GET'])
-def find_matches(request):
+def find_matches(request,ussid):
     # Parse the JSON data from the request body
-    data = json.loads(request.body)
-    ussid = data.get("ussid")
+    # data = json.loads(request.body)
+    # ussid = data.get("ussid")
     
     # Check if ussid is provided
     if not ussid:

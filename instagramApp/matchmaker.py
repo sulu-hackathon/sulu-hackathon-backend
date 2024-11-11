@@ -129,7 +129,7 @@ def matchmake(ussid):
     try:
         # Get the document with the specified ussid
         user_doc = db.collection("users").document(ussid).get()
-        
+        print(BASE_DIR)
         if user_doc.exists:
             # Convert document to dictionary
             user_data = user_doc.to_dict()
