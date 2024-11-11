@@ -96,5 +96,4 @@ jbalvin: 10482862
 maluma: 44059601
 ozuna: 210429330
 karolg: 46864839
-f1: 1692820292
-pumamotorsport: 5703020680
+georgerussell63: 277522586
