@@ -78,8 +78,8 @@ def add_flight_details(request):
         }
         # Save the data in the 'users' collection with document ID as `ussid`
         try:
-            db.collection("users").document(ussid).set(user_flight_details)
-            return JsonResponse({"message": f"Flight details pushed successfully for user"}, status=201)
+            db.collection("users").document(ussid).update(user_flight_details)
+            return JsonResponse({"message": f"Flight details pushed successfully for user {ussid}"}, status=201)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
     else:
