@@ -37,8 +37,8 @@ def create_user(request):
             "nationality": nationality,
             "gender": gender,
             "bio": bio,
-            "pages_hash": str(pages_hash),
-            "people_hash": str(people_hash)
+            "pages_hash":json.dumps(pages_hash),
+            "people_hash": json.dumps(people_hash)
         }
 
         # Save the data in the 'users' collection with document ID as `ussid`

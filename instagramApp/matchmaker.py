@@ -1,6 +1,7 @@
 import requests
 import os
-
+import json
+from firebase_admin import firestore
 from django.conf import settings
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -115,3 +116,75 @@ def process_followings(username):
     print("Pages following count:", pages_count)
     print("People following count:", people_count)
     return pages_hash, people_hash
+
+def calculate_score(hashmap1, hashmap2):
+    score = sum((hashmap1[key] & hashmap2[key]) for key in hashmap1)
+    return score
+
+
+
+
+db = firestore.client()
+def matchmake(ussid):
+    try:
+        # Get the document with the specified ussid
+        user_doc = db.collection("users").document(ussid).get()
+        
+        if user_doc.exists:
+            # Convert document to dictionary
+            user_data = user_doc.to_dict()
+
+            # Convert pages_hash and people_hash back to dictionaries if stored as strings
+            if 'pages_hash' in user_data:
+                user_data['pages_hash'] = json.loads(user_data['pages_hash'])
+            if 'people_hash' in user_data:
+                user_data['people_hash'] = json.loads(user_data['people_hash'])
+        else:
+            print("User not found")
+            return None
+
+    except Exception as e:
+        print("Error:", e)
+        return None
+    
+    # print(user_data['pages_hash'])
+    # Fetch current user's flight_date and flight_number
+    current_flight_date = user_data.get('flight_date')
+    current_flight_number = user_data.get('flight_number')
+    current_people_hash = user_data.get('people_hash')
+    current_pages_hash = user_data.get('pages_hash')
+    # Query for other users with the same flight_date and flight_number
+    matching_users = db.collection("users").where("flight_date", "==", current_flight_date)\
+                                            .where("flight_number", "==", current_flight_number)\
+                                            .stream()
+
+    # Store ussids of matching users, excluding the current user
+    matching_ussids = [user.id for user in matching_users if user.id != ussid]
+    score_list = []
+    for match_ussid in matching_ussids:
+        match_doc = db.collection("users").document(match_ussid).get()
+        if match_doc.exists:
+            match_data = match_doc.to_dict()
+            # Parse pages_hash and people_hash as dictionaries if stored as JSON strings
+            pages_hash = json.loads(match_data['pages_hash']) if 'pages_hash' in match_data else {}
+            people_hash = json.loads(match_data['people_hash']) if 'people_hash' in match_data else {}
+            people_score = calculate_score(pages_hash,current_pages_hash)
+            pages_score = calculate_score(people_hash , current_people_hash)
+            total_score = people_score + pages_score
+            # score_list.append({"ussid": match_ussid, "total_score": total_score})
+            # Collect additional fields and add to score list
+            score_list.append({
+                "ussid": match_ussid,
+                "instaid": match_data.get("instaid"),
+                "name": match_data.get("name"),
+                "picture": match_data.get("picture"),
+                "age": match_data.get("age"),
+                "nationality": match_data.get("nationality"),
+                "gender": match_data.get("gender"),
+                "bio": match_data.get("bio"),
+                "total_score": total_score
+            })
+    sorted_score_list = sorted(score_list, key=lambda x: x["total_score"], reverse=True)      
+    for entry in sorted_score_list:
+        print(f"User ID: {entry['ussid']}, Total Score: {entry['total_score']}, Name: {entry['name']}")
+    return sorted_score_list

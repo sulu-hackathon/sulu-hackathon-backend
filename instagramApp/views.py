@@ -2,7 +2,9 @@ import requests
 from django.conf import settings
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
-
+import json
+from instagramApp.matchmaker import matchmake 
+from django.http import JsonResponse
 # Base URL for the Sulu Instagram API
 INSTAGRAM_API_URL = "https://instagram-scraper-2022.p.sulu.sh/ig/"
 
@@ -49,3 +51,22 @@ def validate_instagram(request, username):
     
     except requests.exceptions.RequestException:
         return HttpResponse(status=500)
+    
+@api_view(['GET'])
+def find_matches(request):
+    # Parse the JSON data from the request body
+    data = json.loads(request.body)
+    ussid = data.get("ussid")
+    
+    # Check if ussid is provided
+    if not ussid:
+        return JsonResponse({"error": "ussid is required"}, status=400)
+    
+    # Call matchmake to get the sorted list of matches
+    sorted_score_list = matchmake(ussid)
+    
+    # Return the sorted list as a JSON response
+    if sorted_score_list is not None:
+        return JsonResponse({"matches": sorted_score_list}, status=200, safe=False)
+    else:
+        return JsonResponse({"error": "User not found or an error occurred"}, status=404) 
