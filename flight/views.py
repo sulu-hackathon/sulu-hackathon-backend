@@ -84,4 +84,23 @@ def add_flight_details(request):
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Only POST requests are allowed"}, status=405)
+    
+
+@api_view(['GET'])
+def autocomplete_flight_number(request,flight_number):
+    FLIGHT_NUMBER_URL =f"https://aerodatabox.p.sulu.sh/flights/search/term?q={flight_number}&limit=5"
+    try:
+        # Make the API request
+        response = requests.get(FLIGHT_NUMBER_URL, headers=headers)
+        response.raise_for_status()
+        response = response.json()
+        flight_numbers = [item["number"] for item in response.get("items", [])]
+        if flight_numbers is None:
+            return None
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({"error": "Failed to fetch numbers"}, status=404)
+    return JsonResponse(flight_numbers, safe=False)
+
+
+
 
